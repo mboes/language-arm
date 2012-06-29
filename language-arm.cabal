@@ -1,0 +1,28 @@
+name:           language-arm
+version:        0.1
+author:         Mathieu Boespflug
+maintainer:     Mathieu Boespflug <mboes@tweag.net>
+copyright:      © 2012 Mathieu Boespflug
+homepage:       http://github.com/mboes/language-arm
+synopsis:       Parser and pretty printer form ARM assembly.
+description:
+    This package defines a datatype of ARM instructions, along with
+    a parser and a printer using the GNU Assembler syntax.
+category:       Compilers/Interpreters, Language
+license:        BSD
+license-file:   COPYING
+cabal-version:  >= 1.9.2
+build-type:     Simple
+
+source-repository head
+  type:     git
+  location: git://github.com/mboes/language-arm
+
+library
+  build-depends: base >= 4 && < 5, cassette
+  ghc-options:   -W -fno-warn-incomplete-patterns -fno-warn-unused-matches
+
+test-suite tests
+  type: exitcode-stdio-1.0
+  main-is: Test.hs
+  build-depends: base
