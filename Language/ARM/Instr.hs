@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes, ImpredicativeTypes #-}
+{-# OPTIONS_GHC -funbox-strict-fields #-}
 module Language.ARM.Instr where
 
 import Text.Cassette hiding (C, CC, CC0, BinL)
