@@ -9,17 +9,14 @@ import Data.Word
 import Data.Bits
 
 
-type Address = Word32
-
-type Offset = Word32
-
 type Register = Int
 
-data Operand = A  !Address          -- ^ Absolute addressing mode
-             | R  !Register         -- ^ Register direct
-             | RI !Register         -- ^ Register indirect or indexed
-             | O  !Register !Offset -- ^ Register based with offset
-             | I  !Word32           -- ^ Immediate data
+data Shift = LSL !Int | LSR !Int | ASR !Int | ROR !Int | RRX
+           deriving (Eq, Show)
+
+data Operand = R !Register         -- ^ Register
+             | I !Word32           -- ^ Immediate data
+             | S !Shift            -- ^ Operand shift
              deriving (Eq, Show)
 
 type Opcode = Word32
