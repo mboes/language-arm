@@ -190,12 +190,12 @@ instruction :: Bool -> CC Instruction
 instruction insideIT = instructionL --> variants where
   outsideIT = not insideIT
   variants =
-        -- ADC (immediate)
-        mnem "ADC" <> status <> args regndimm12 <>
+        -- ADC (immediate) encoding T1
+        mnem "ADC" <> status <>
+        args regndimm12 <>
         sign Hi 15 11 [b|11110|] <> sign Hi 9 5 [b|01010|] <> sign Lo 15 15 [b|0|]
 
-        -- ADC (register) T1
-    <|> (mnem "ADC" <> statusOn  <> when outsideIT <|>
-         mnem "ADC" <> statusOff <> when insideIT) <>
+        -- ADC (register) encoding T1
+    <|> mnem "ADC" <> (statusOn  <> when outsideIT <|> statusOff <> when insideIT) <>
         args (regdn_m 5 3 2 0) <>
         sign Lo 15 6 [b|0100000101|]
