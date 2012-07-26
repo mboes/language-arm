@@ -204,3 +204,38 @@ instruction insideIT = instructionL --> variants where
     <|> mnem "ADC" <> status <>
         args regndmW <> optional shift <>
         sign Hi 15 5 [b|11101011010|]
+
+        -- ADD (immediate) encoding T1
+    <|> mnem "ADD" <> (statusOn <> when outsideIT <|> statusOff <> when insideIT) <>
+        args regimm3nd <>
+        sign Lo 15 9 [b|0001110|]
+
+        -- ADD (immediate) encoding T2
+    <|> mnem "ADD" <> (statusOn <> when outsideIT <|> statusOff <> when insideIT) <>
+        args [regdn 10 8, imm8] <>
+        sign Lo 15 11 [b|00110|]
+
+        -- ADD (immediate) encoding T3
+    <|> mnem "ADD" <> status <>
+        args regndimm12 <>
+        sign Hi 15 11 [b|11110|] <> sign Hi 9 5 [b|01000|] <> sign Lo 15 15 [b|0|]
+
+        -- ADD (immediate) encoding T4
+    <|> mnem "ADDW" <>
+        args regndimm12 <>
+        args 15 11 [b|11110|] <> sign Hi 9 4 [b|00000|] <> sign Lo 15 15 [b|0|]
+
+        -- ADD (register) encoding T1
+    <|> mnem "ADD" <> (statusOn <> when outsideIT <|> statusOff <> when insideIT) <>
+        args regmndN <>
+        sign Lo 15 9 [b|0001100|]
+
+        -- ADD (register) encoding T2
+    <|> mnem "ADD" <>
+        args regm_dn
+        sign Lo 15 8 [b|01000100|]
+
+        -- ADD (register) encoding T3
+    <|> mnem "ADD" <> status <>
+        args regndmW <> optional shift <>
+        sign Hi 15 5 [b|11101011000|]
