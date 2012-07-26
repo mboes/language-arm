@@ -131,9 +131,6 @@ imm12 = K7 f g where
   base = setRange 7 0
   exp  = setRange 11 8
 
-regndimm12 :: [CC Operand]
-regndimm12 = [reg Lo 11 8, reg Hi 3 0, imm12]
-
 reg :: Part -> Int -> Int -> CC Operand
 reg which start end = K7 f g where
   f k k' s           = k (\s _ -> k' s) s (R $ fromIntegral $ range (start + base) (end + base) s)
@@ -142,6 +139,17 @@ reg which start end = K7 f g where
     k (\s -> k' s o) (setRange (start + base) (end + base) (fromIntegral reg) s)
                      | otherwise = k' s o
   base = fromEnum which `shiftL` 4
+
+-- | First operand, destination register, second operand (wide encoding).
+regndmW :: [CC Operand]
+regndmW = [reg Lo 11 8, reg Hi 3 0, reg Lo 3 0]
+
+-- | Second operand, first operand, destination register (narrow encoding).
+regmndN :: [CC Operand]
+regmndN = [reg Lo 2 1 0, reg Lo 5 3, reg Lo 8 6]
+
+regndimm12 :: [CC Operand]
+regndimm12 = [reg Lo 11 8, reg Hi 3 0, imm12]
 
 regdn :: Int -> Int -> [CC Operand]
 regdn start end = [reg Lo start end, reg Lo start end]
