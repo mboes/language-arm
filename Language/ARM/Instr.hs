@@ -199,3 +199,8 @@ instruction insideIT = instructionL --> variants where
     <|> mnem "ADC" <> (statusOn  <> when outsideIT <|> statusOff <> when insideIT) <>
         args (regdn_m 5 3 2 0) <>
         sign Lo 15 6 [b|0100000101|]
+
+        -- ADC (register) encoding T2
+    <|> mnem "ADC" <> status <>
+        args regndmW <> optional shift <>
+        sign Hi 15 5 [b|11101011010|]
