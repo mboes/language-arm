@@ -8,6 +8,7 @@ import qualified Data.ByteString.Lazy.Char8 as B
 import Language.Literals.Binary
 import Data.Word
 import Data.Bits
+import Control.Monad (mzero)
 
 
 type Register = Int
@@ -157,6 +158,33 @@ regdn start end = [reg Lo start end, reg Lo start end]
 regdn_m :: Int -> Int -> Int -> Int -> [CC Operand]
 regdn_m startdn enddn startm endm =
   regdn startdn enddn ++ ([reg Lo startm endm] :: [CC Operand])
+
+shift :: CC Operand
+shift = K7 f g where
+  f k k' s = maybe (k' s) (k (\s _ -> k' s) s . S) $
+             let typ = range 5 4 s
+                 imm = range 14 12 s `shiftL` 2 .|. range 7 6 s
+             in case (typ, imm) of
+                  ([b|00|], 0) -> mzero
+                  ([b|00|], n) -> return $ LSL (fromIntegral n)
+                  ([b|01|], 0) -> return $ LSR 32
+                  ([b|01|], n) -> return $ LSR (fromIntegral n)
+                  ([b|10|], 0) -> return $ ASR 32
+                  ([b|10|], n) -> return $ ASR (fromIntegral n)
+                  ([b|11|], 0) -> return $ RRX
+                  ([b|11|], n) -> return $ ROR (fromIntegral n)
+  g k k' s x@(S sh) =
+    k (\s -> k' s x) $ uncurry encode $ case sh of
+      LSL n  -> ([b|00|], fromIntegral n)
+      LSR 32 -> ([b|01|], 0)
+      LSR n  -> ([b|01|], fromIntegral n)
+      ASR 32 -> ([b|10|], 0)
+      ASR n  -> ([b|10|], fromIntegral n)
+      RRX    -> ([b|11|], 0)
+      ROR n  -> ([b|11|], fromIntegral n)
+    where encode typ imm = setRange 5 4 typ $
+                           setRange 14 12 (range 4 2 imm) $
+                           setRange 7 6 (range 1 0 imm) s
 
 instruction :: Bool -> CC Instruction
 instruction insideIT = instructionL --> variants where
