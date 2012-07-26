@@ -159,8 +159,9 @@ regdn_m :: Int -> Int -> Int -> Int -> [CC Operand]
 regdn_m startdn enddn startm endm =
   regdn startdn enddn ++ ([reg Lo startm endm] :: [CC Operand])
 
-shift :: CC Operand
-shift = K7 f g where
+-- | Register shift.
+rshift :: CC Operand
+rshift = K7 f g where
   f k k' s = maybe (k' s) (k (\s _ -> k' s) s . S) $
              let typ = range 5 4 s
                  imm = range 14 12 s `shiftL` 2 .|. range 7 6 s
@@ -202,7 +203,7 @@ instruction insideIT = instructionL --> variants where
 
         -- ADC (register) encoding T2
     <|> mnem "ADC" <> status <>
-        args regndmW <> optional shift <>
+        args regndmW <> optional rshift <>
         sign Hi 15 5 [b|11101011010|]
 
         -- ADD (immediate) encoding T1
@@ -237,5 +238,5 @@ instruction insideIT = instructionL --> variants where
 
         -- ADD (register) encoding T3
     <|> mnem "ADD" <> status <>
-        args regndmW <> optional shift <>
+        args regndmW <> optional rshift <>
         sign Hi 15 5 [b|11101011000|]
