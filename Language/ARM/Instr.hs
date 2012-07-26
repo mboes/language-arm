@@ -134,7 +134,7 @@ imm12 = K7 f g where
 
 reg :: Part -> Int -> Int -> CC Operand
 reg which start end = K7 f g where
-  f k k' s           = k (\s _ -> k' s) s (R $ fromIntegral $ range (start + base) (end + base) s)
+  f k k' s = k (\s _ -> k' s) s (R $ fromIntegral $ range (start + base) (end + base) s)
   -- If register number is already set, then check it is the same, otherwise fail.
   g k k' s o@(R reg) | range (start + base) (end + base) s == fromIntegral reg =
     k (\s -> k' s o) (setRange (start + base) (end + base) (fromIntegral reg) s)
