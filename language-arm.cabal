@@ -9,9 +9,10 @@ description:
     This package defines a datatype of ARM instructions, along with
     a parser and a printer using the GNU Assembler syntax.
 category:       Compilers/Interpreters, Language
-license:        BSD
-license-file:   COPYING
-cabal-version:  >= 1.9.2
+license:        LGPL
+license-file:   COPYING.LESSER
+extra-license-files: COPYING
+cabal-version:  >= 1.10
 build-type:     Simple
 
 source-repository head
