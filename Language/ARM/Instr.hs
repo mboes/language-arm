@@ -5,10 +5,10 @@ module Language.ARM.Instr where
 import Text.Cassette hiding (C, CC, CC0, BinL)
 import qualified Text.Cassette as Cassette
 import qualified Data.ByteString.Lazy.Char8 as B
+import qualified Control.Applicative
 import Language.Literals.Binary
 import Data.Word
 import Data.Bits
-import Control.Monad (mzero)
 
 
 type Register = Int
@@ -166,7 +166,7 @@ rshift = K7 f g where
              let typ = range 5 4 s
                  imm = range 14 12 s `shiftL` 2 .|. range 7 6 s
              in case (typ, imm) of
-                  ([b|00|], 0) -> mzero
+                  ([b|00|], 0) -> Control.Applicative.empty
                   ([b|00|], n) -> return $ LSL (fromIntegral n)
                   ([b|01|], 0) -> return $ LSR 32
                   ([b|01|], n) -> return $ LSR (fromIntegral n)
