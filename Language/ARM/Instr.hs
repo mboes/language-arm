@@ -9,6 +9,7 @@ import qualified Control.Applicative
 import Language.Literals.Binary
 import Data.Word
 import Data.Bits
+import Data.Maybe (fromMaybe)
 
 
 type Register = Int
@@ -36,12 +37,18 @@ range :: Bits a => Int -> Int -> a -> a
 range start end _ | start < end = 0
 range start end w = (mask start end .&. w) `shiftR` end
 
+setRangeC :: Bits s => Int -> Int -> s -> Cassette.C s r -> Cassette.C s r
+setRangeC start end _   | start < end =
+  sideA nothing
+setRangeC start end src | complement (mask (start - end) 0) .&. src /= 0 =
+  sideA empty
+setRangeC start end src =
+  \k k' s -> k k' $ (src `shiftL` end) .|. complement (mask start end) .&. s
+
 setRange :: Bits a => Int -> Int -> a -> a -> a
-setRange start end _   dst | start < end = dst
-setRange start end src _   | complement (mask (start - end) 0) .&. src /= 0 =
-  error "setRange: operand does not fit in range."
 setRange start end src dst =
-  (src `shiftL` end) .|. complement (mask start end) .&. dst
+  fromMaybe err $ setRangeC start end src (const Just) (const Nothing) dst
+  where err = error "setRange: operand does not fit in range."
 
 type C r  = Cassette.C   Opcode r
 type CC a = Cassette.CC  Opcode a
