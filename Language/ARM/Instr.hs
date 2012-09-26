@@ -30,15 +30,15 @@ type Mnemonic = B.ByteString
 data Instruction = Mnemonic :$ [Operand]
                  deriving (Eq, Show)
 
-mask :: Bits a => Int -> Int -> a
+mask :: (Bits a, Num a) => Int -> Int -> a
 mask start end | start < end = 0
 mask start end = complement (complement 0 `shiftL` (start - end + 1)) `shiftL` end
 
-range :: Bits a => Int -> Int -> a -> a
+range :: (Bits a, Num a) => Int -> Int -> a -> a
 range start end _ | start < end = 0
 range start end w = (mask start end .&. w) `shiftR` end
 
-setRangeC :: Bits s => Int -> Int -> s -> Cassette.C s r -> Cassette.C s r
+setRangeC :: (Bits s, Num s) => Int -> Int -> s -> Cassette.C s r -> Cassette.C s r
 setRangeC start end _   | start < end =
   sideA nothing
 setRangeC start end src | complement (mask (start - end) 0) .&. src /= 0 =
@@ -46,7 +46,7 @@ setRangeC start end src | complement (mask (start - end) 0) .&. src /= 0 =
 setRangeC start end src =
   \k k' s -> k k' $ (src `shiftL` end) .|. complement (mask start end) .&. s
 
-setRange :: Bits a => Int -> Int -> a -> a -> a
+setRange :: (Bits a, Num a) => Int -> Int -> a -> a -> a
 setRange start end src dst =
   fromMaybe err $ setRangeC start end src (const Just) (const Nothing) dst
   where err = error "setRange: operand does not fit in range."
