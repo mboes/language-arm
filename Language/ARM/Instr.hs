@@ -155,7 +155,7 @@ regndmW = [reg Lo 11 8, reg Hi 3 0, reg Lo 3 0]
 
 -- | Second operand, first operand, destination register (narrow encoding).
 regmndN :: [CC Operand]
-regmndN = [reg Lo 2 1 0, reg Lo 5 3, reg Lo 8 6]
+regmndN = [reg Lo 2 0, reg Lo 5 3, reg Lo 8 6]
 
 regndimm12 :: [CC Operand]
 regndimm12 = [reg Lo 11 8, reg Hi 3 0, imm12]
