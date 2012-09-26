@@ -1,4 +1,5 @@
-{-# LANGUAGE RankNTypes, ImpredicativeTypes #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ImpredicativeTypes #-}
 {-# OPTIONS_GHC -funbox-strict-fields #-}
 module Language.ARM.Instr where
 
