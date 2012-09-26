@@ -108,6 +108,17 @@ sign which start end bits = K7 f g where
   g k k' s = k k' (setRange (start + base) (end + base) bits s)
   base = fromEnum which `shiftL` 4
 
+imm :: Int -> Int -> CC Operand
+imm start end = K7 f g where
+  f k k' s         = k (\s _ -> k' s) s (I $ range start end s)
+  g k k' s o@(I x) = k (\s -> k' s o) (setRange start end x s)
+
+imm3 :: CC Operand
+imm3 = imm 8 6
+
+imm8 :: CC Operand
+imm8 = imm 7 0
+
 imm12 :: CC Operand
 imm12 = K7 f g where
   f k k' s = k (\s _ -> k' s) s (I x) where
@@ -156,6 +167,12 @@ regndmW = [reg Lo 11 8, reg Hi 3 0, reg Lo 3 0]
 -- | Second operand, first operand, destination register (narrow encoding).
 regmndN :: [CC Operand]
 regmndN = [reg Lo 2 0, reg Lo 5 3, reg Lo 8 6]
+
+regimm3nd :: [CC Operand]
+regimm3nd = [reg Lo 2 0, reg Lo 5 3, imm3]
+
+regdnimm8 :: [CC Operand]
+regdnimm8 = [reg Lo 10 8, reg Lo 10 8, imm8]
 
 regndimm12 :: [CC Operand]
 regndimm12 = [reg Lo 11 8, reg Hi 3 0, imm12]
